@@ -3,11 +3,11 @@ const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get("id")
 
 fetch(`http://localhost:3000/api/products/${id}`)
-.then((response) => response.json())
-.then((res) => handleData(res))
+.then(response => response.json())
+.then(res => handleData(res))
 
 function handleData(sofa) {
-        const {altTxt, colors, description, imageUrl, name, prices} = sofa
+        const { altTxt, colors, description, imageUrl, name, price } = sofa
         makeImage(imageUrl, altTxt)
         makeTitle(name)
         makePrice(price)
@@ -20,7 +20,7 @@ function makeImage(imageUrl, altTxt) {
     image.src = imageUrl
     image.alt = altTxt
     const parent = document.querySelector(".item__img")
-    if (parent != null) parent.appendChild(image)
+    if (parent != null)parent.appendChild(image)
 }
 
 function makeTitle(name) {
@@ -30,8 +30,8 @@ function makeTitle(name) {
 
 function makePrice(price) {
     const span = document.querySelector("#price")
+    const parent = document.querySelector(".item__content__titlePrice")
     if (span != null) span.textContent = price
-
 }
 
 function makeDescription(description) {
