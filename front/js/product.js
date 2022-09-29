@@ -3,15 +3,19 @@ const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get("id")
 if (id != null) {
     let itemPrice = 0 
+    let imgUrl, altText, articleName
 }
 
 fetch(`http://localhost:3000/api/products/${id}`)
-.then(response => response.json())
-.then(res => handleData(res))
+.then((response) => response.json())
+.then((res) => handleData(res))
 
 function handleData(sofa) {
         const { altTxt, colors, description, imageUrl, name, price } = sofa
         itemPrice = price
+        imgUrl = imageUrl
+        altText = altTxt
+        articleName = name
         makeImage(imageUrl, altTxt)
         makeTitle(name)
         makePrice(price)
@@ -57,22 +61,34 @@ function makeColors(colors) {
 }
 
 const button = document.querySelector("#addToCart")
-if (button != null) {
-    button.addEventListener("click", (e) => {
-        const color = document.querySelector("#colors").value
-        const quantity = document.querySelector("#quantity").value
-        if (color == null || color === "" || quantity == null || quantity == 0) {
-            alert("Please select a color and quantity")
-         }
-         const data = {
-             id: id,
-             color: color,
-             quantity: Number(quantity),
-             price: itemPrice,
-         }
-         localStorage.setItem(id, JSON.stringify(data))
-         window.location.href = "cart.html"
-        })
+button.addEventListener("click", handleClick)
+
+
+function handleClick() {
+    const color = document.querySelector("#colors").value
+    const quantity = document.querySelector("#quantity").value
+    if (color == null || color === "" || quantity == null || quantity == 0) {
+        alert("Please select a color and quantity")
+        return
+        }
+        saveOrder(color, quantity)
+    
+        window.location.href = "cart.html"
+
     }
 
+    function saveOrder(color, quantity)  { 
+        const data = {
+        id: id,
+        color: color,
+        quantity: Number(quantity),
+        price: itemPrice,
+        imageUrl: imgUrl,
+        altTxt: altText,
+        name: articleName
+    }
+
+    localStorage.setItem(id, JSON.stringify(data))
+
+    }
 
