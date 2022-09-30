@@ -33,7 +33,11 @@ function makeImage(imageUrl, altTxt) {
 
 function makeTitle(name) {
     const h1 = document.querySelector("#title")
-    if (h1 != null) h1.textContent = name
+    console.log(h1)
+    const parent = document.querySelector(".item__content__titlePrice")
+    if (h1 != null){ 
+        h1.innerText = name
+    }
 }
 
 function makePrice(price) {

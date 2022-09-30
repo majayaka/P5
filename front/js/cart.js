@@ -19,12 +19,14 @@ function displayItem(item) {
     article.appendChild(div)
 
     const cardItemContent = makeDescription(div, item)
+    // const cardItemContent = makeCardItemContent()
     article.appendChild(cardItemContent)
 }
 
 function makeCardItemContent(item) {
     const div = document.createElement("div")
     div.classList.add("cart__item__content")
+    // div.appendChild(makeDescription())
 }
 
 function makeDescription(div, item) { 
