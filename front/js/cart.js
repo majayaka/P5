@@ -14,13 +14,26 @@ function retrieveCart() {
 
 function displayItem(item) {
     const article = makeArticle(item)
-    const imageDiv = makeImageDiv(item) //??imageDiv? ou div?
+    const imageDiv = makeImageDiv(item) 
     article.appendChild(imageDiv)
     
     const cartItemContent = makeCartContent(item)
     article.appendChild(cartItemContent)
     displayArticle(article)
-    
+    displayTotalQuantity()
+    displayTotalPrice()
+}
+
+function displayTotalQuantity() {
+    const totalQuantity = document.querySelector("#totalQuantity")
+    const total = cart.reduce((total, item) => total + item.quantity, 0)
+    totalQuantity.textContent = total
+}
+
+function displayTotalPrice() {
+    const totalPrice = document.querySelector("#totalPrice")
+    const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+    totalPrice.textContent = total
 }
 
 
@@ -119,7 +132,6 @@ function makeDescription(item) {
 function displayArticle(article) {
     document.querySelector("#cart__items").appendChild(article)
 }
-
 
 
 
