@@ -75,20 +75,37 @@ function makeSettings(item) {
     settings.classList.add("cart__item__content__settings")
 
     addQuantityToSettings(settings, item)
-    addDeleteButton(settings)
+    addDeleteButton(settings, item)
     return settings
 }
 
-function addDeleteButton(settings) {
+function addDeleteButton(settings,item) {
     const div = document.createElement("div")
     div.classList.add("cart__item__content__settings__delete")
+    div.addEventListener("click", () => deleteItem(item))
     const p = document.createElement("p")
     p.textContent = "Supprimer"
     div.appendChild(p)
     settings.appendChild(div)
 }
 
-   
+function deleteItem(item) {
+    const itemToDelete = cart.findIndex(
+        (product) => product.id === item.id && product.color === item.color)
+    cart.splice(itemToDelete,1)
+    displayTotalPrice()
+    displayTotalQuantity()
+    deleteDataFromCache(item)
+    deleteArticleFromPage(item)
+}
+
+function deleteArticleFromPage(item) {
+    const articleToDelete = document.querySelector(
+        `article[data-id="${item.id}"][data-color="${item.color}"]`
+        ) 
+    articleToDelete.remove()
+}
+
 
 function addQuantityToSettings(settings, item) {
     const quantity = document.createElement("div")
@@ -116,6 +133,11 @@ function updatePriceAndQuantity (id, newValue, item) {
     displayTotalQuantity()
     displayTotalPrice()
     saveNewDataToCache(item)
+}
+
+function deleteDataFromCache(item) {
+    const key = `${item.id}-${item.color}`
+    localStorage.removeItem(key)
 }
 
 function saveNewDataToCache(item) {
