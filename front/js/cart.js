@@ -171,5 +171,52 @@ function displayArticle(article) {
     document.querySelector("#cart__items").appendChild(article)
 }
 
+const orderButton = document.querySelector("#order")
+orderButton.addEventListener("click", (e) => submitForm(e))
 
 
+function submitForm(e) {
+    e.preventDefault()
+    if (cart.length === 0) {
+        alert("Your cart is empty!")
+    }
+    const requestData = makeRequestData()
+    fetch("http://localhost:3000/api/products/order", {
+        method : "POST",
+        body : JSON.stringify(requestData),
+        headers : {
+            "Content-Type" : "application/json"
+        }   
+    })
+    .then(response => response.json())
+    .then((data) => console.log(data))
+}
+
+function makeRequestData() {
+    const form = document.querySelector(".cart__order__form")
+    const contact = {
+        firstName : form.elements.firstName.value,
+        lastName : form.elements.lastName.value,
+        address : form.elements.address.value,
+        city : form.elements.city.value,
+        email : form.elements.email.value
+    }
+    const products = cart.map(item => item.id)
+    const requestData = {
+        contact,
+        products
+    }
+return requestData
+
+}
+
+function getIdsfromCache() {
+    const numberOfProducts = localStorage.length
+    const ids = []
+    for (let i = 0; i < numberOfProducts; i++) {
+        const key = localStorage.key(i)
+        const id = key.split("-")[0]    
+        ids.push(item.id)
+    }
+    return ids
+}
