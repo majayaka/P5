@@ -38,7 +38,6 @@ function displayTotalPrice() {
 
 
 
-
 function makeArticle(item) {
     const article = document.createElement("article")
     article.classList.add("cart__item")
@@ -60,13 +59,13 @@ function makeImageDiv(item) {
 
 function makeCartContent(item) {
     const cartItemContent = document.createElement("div")
- cartItemContent.classList.add("cart__item__content")
+    cartItemContent.classList.add("cart__item__content")
     
     const description = makeDescription(item)
     const settings = makeSettings(item)
 
- cartItemContent.appendChild(description)
- cartItemContent.appendChild(settings)
+    cartItemContent.appendChild(description)
+    cartItemContent.appendChild(settings)
     return cartItemContent
 }
 
@@ -83,6 +82,7 @@ function addDeleteButton(settings,item) {
     const div = document.createElement("div")
     div.classList.add("cart__item__content__settings__delete")
     div.addEventListener("click", () => deleteItem(item))
+
     const p = document.createElement("p")
     p.textContent = "Supprimer"
     div.appendChild(p)
@@ -119,15 +119,15 @@ function addQuantityToSettings(settings, item) {
     input.value = item.quantity
     input.min = "1"
     input.max = "100"
-    input.addEventListener("input", () => updatePriceAndQuantity(item.id, input.value, item))
+    input.addEventListener("input", () => updatePriceAndQuantity(input.value, item))
 
     quantity.appendChild(p)
     settings.appendChild(quantity)
     quantity.appendChild(input)
 }
 
-function updatePriceAndQuantity (id, newValue, item) {
-    const itemToUpdate = cart.find(item => item.id === id)
+function updatePriceAndQuantity (newValue, item) {
+    const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)
     itemToUpdate.quantity = Number(newValue) 
     item.quantity = itemToUpdate.quantity
     displayTotalQuantity()
@@ -143,7 +143,7 @@ function deleteDataFromCache(item) {
 function saveNewDataToCache(item) {
     const dataToSave = JSON.stringify(item)
     const key = `${item.id}- ${item.color}`
-    localStorage.setItem(item.id, dataToSave)
+    localStorage.setItem(key, dataToSave)
 }
 
 
@@ -171,15 +171,20 @@ function displayArticle(article) {
     document.querySelector("#cart__items").appendChild(article)
 }
 
-const orderButton = document.querySelector("#order")
-orderButton.addEventListener("click", (e) => submitForm(e))
+    const orderButton = document.querySelector("#order")
+    orderButton.addEventListener("click", (e) => submitForm(e))
 
 
 function submitForm(e) {
     e.preventDefault()
-    if (cart.length === 0) {
+    if (cart.length === 0)  {
         alert("Your cart is empty!")
+        return
     }
+
+    if (isFormInvalid()) return
+    if (isEmailInvalid()) return
+
     const requestData = makeRequestData()
     fetch("http://localhost:3000/api/products/order", {
         method : "POST",
@@ -189,8 +194,37 @@ function submitForm(e) {
         }   
     })
     .then(response => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+        const orderId = data.orderId
+        window.location.href = "confirmation.html?orderId=" + data.orderId
+    })
+    .catch((err) => console.error(err))
 }
+
+function isEmailInvalid() {
+    const email = document.querySelector("#email").value
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address")
+        return true
+    }
+    return false
+}
+
+
+
+function isFormInvalid() {
+    const form = document.querySelector(".cart__order__form")
+    const inputs = form.querySelectorAll("input")
+    inputs.forEach((input) => {
+        if (input.value === "") {
+            alert("Please fill in all fields")
+            return true
+        }
+        return false    
+    }) 
+}
+
 
 function makeRequestData() {
     const form = document.querySelector(".cart__order__form")
