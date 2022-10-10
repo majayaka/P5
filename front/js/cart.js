@@ -1,5 +1,6 @@
 const cart = []
 
+/** Retrive elements from local strage by sorting it for display.*/
 retrieveCart()
 cart.forEach((item) => displayItem(item))
 
@@ -12,6 +13,7 @@ function retrieveCart() {
     }
 }
 
+/** Make and display the article. */
 function displayItem(item) {
     const article = makeArticle(item)
     const imageDiv = makeImageDiv(item) 
@@ -24,12 +26,14 @@ function displayItem(item) {
     displayTotalPrice()
 }
 
+/** Calculation of the quantity to be displayed. */
 function displayTotalQuantity() {
     const totalQuantity = document.querySelector("#totalQuantity")
     const total = cart.reduce((total, item) => total + item.quantity, 0)
     totalQuantity.textContent = total
 }
 
+/** Calculation of the price to be displayed. */
 function displayTotalPrice() {
     const totalPrice = document.querySelector("#totalPrice")
     const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
@@ -106,7 +110,7 @@ function deleteArticleFromPage(item) {
     articleToDelete.remove()
 }
 
-
+/** Listen for the click on the quantity element. */
 function addQuantityToSettings(settings, item) {
     const quantity = document.createElement("div")
     quantity.classList.add("cart__item__content__settings__quantity")
@@ -126,6 +130,7 @@ function addQuantityToSettings(settings, item) {
     quantity.appendChild(input)
 }
 
+/** Update product quantity and price. */
 function updatePriceAndQuantity (newValue, item) {
     const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)
     itemToUpdate.quantity = Number(newValue) 
@@ -135,11 +140,13 @@ function updatePriceAndQuantity (newValue, item) {
     saveNewDataToCache(item)
 }
 
+/** Remove the element from the dom and the local storage. */
 function deleteDataFromCache(item) {
     const key = `${item.id}-${item.color}`
     localStorage.removeItem(key)
 }
 
+/** Add product to local storage. */
 function saveNewDataToCache(item) {
     const dataToSave = JSON.stringify(item)
     const key = `${item.id}- ${item.color}`
@@ -181,9 +188,14 @@ function submitForm(e) {
         alert("Your cart is empty!")
         return
     }
+    if (isFirstNameInvalid() === true) return;
+    if (isLastNameInvalid() === true) return;
+    if (isAddressInvalid() === true) return;
+    if (isCityInvalid() === true) return;
+    if (isEmailInvalid() === true) return;
+    
+}
 
-    if (isFormInvalid()) return
-    if (isEmailInvalid()) return
 
     const requestData = makeRequestData()
     fetch("http://localhost:3000/api/products/order", {
@@ -199,6 +211,54 @@ function submitForm(e) {
         window.location.href = "confirmation.html?orderId=" + data.orderId
     })
     .catch((err) => console.error(err))
+
+
+function isFirstNameInvalid() {
+    const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
+    const firstName = document.querySelector("#firstName").value;
+    if (regex.test(firstName) === false) {
+        document.querySelector("#firstNameErrorMsg").textContent = 
+        "Please enter a valid first name.";
+        return true;
+    } else {
+        document.querySelector("#firstNameErrorMsg").textContent = "";
+}
+}
+
+function isLastNameInvalid() {
+    const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
+    const lastName = document.querySelector("#lastName").value;
+    if (regex.test(lastName) === false) {
+        document.querySelector("#lastNameErrorMsg").textContent = 
+        "Please enter a valid last name.";
+        return true;
+    } else {
+        document.querySelector("#lastNameErrorMsg").textContent = "";
+}
+}
+
+function isAddressInvalid() {
+    const regex = /^[a-zA-Z0-9À-ÿ-. ]+$/;
+    const address = document.querySelector("#address").value;
+    if (regex.test(address) === false) {
+        document.querySelector("#addressErrorMsg").textContent =
+        "Please enter a valid address.";
+        return true;
+    } else {
+        document.querySelector("#addressErrorMsg").textContent = "";
+}
+} 
+
+function isCityInvalid() {
+    const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
+    const city = document.querySelector("#city").value;
+    if (regex.test(city) === false) {
+        document.querySelector("#cityErrorMsg").textContent =
+        "Please enter a valid city.";
+        return true;
+    } else {
+        document.querySelector("#cityErrorMsg").textContent = "";
+}
 }
 
 function isEmailInvalid() {
@@ -206,12 +266,12 @@ function isEmailInvalid() {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
     if (!emailRegex.test(email)) {
         alert("Please enter a valid email address")
-        return true
-    }
-    return false
+        return true;
+    } else {
+        document.querySelector("#emailErrorMsg").textContent = "";
 }
-
-
+}
+    
 
 function isFormInvalid() {
     const form = document.querySelector(".cart__order__form")
@@ -225,7 +285,7 @@ function isFormInvalid() {
     }) 
 }
 
-
+/** Prepare the data for the request. */
 function makeRequestData() {
     const form = document.querySelector(".cart__order__form")
     const contact = {
@@ -244,6 +304,7 @@ return requestData
 
 }
 
+/** Prepare an array of ids. */
 function getIdsfromCache() {
     const numberOfProducts = localStorage.length
     const ids = []
