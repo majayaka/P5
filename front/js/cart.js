@@ -1,19 +1,20 @@
-const cart = []
-
-/** Retrive elements from local strage by sorting it for display.*/
-retrieveCart()
-cart.forEach((item) => displayItem(item))
+const cart = [] /** list of array of all products in cart.*/
+retrieveCart() /** Retrive elements from local strage.*/
 
 function retrieveCart() {
-    const numberOfItems = localStorage.length
+    const numberOfItems = localStorage.length /** Number of items added in cart*/
     for(let i = 0; i < numberOfItems; i++) {
+        /** Retrive elements with keys from local strage*/
         const item = localStorage.getItem(localStorage.key(i)) || ""
-        const itemObject = JSON.parse(item)
+        const itemObject = JSON.parse(item) /** not in string, in objet*/
         cart.push(itemObject)
     }
 }
 
-/** Make and display the article. */
+/** Display Elements retrived from local strage.*/
+cart.forEach((item) => displayItem(item))
+
+/** Make displayItem to display in cart.html*/
 function displayItem(item) {
     const article = makeArticle(item)
     const imageDiv = makeImageDiv(item) 
@@ -24,6 +25,77 @@ function displayItem(item) {
     displayArticle(article)
     displayTotalQuantity()
     displayTotalPrice()
+}
+
+/** Make Article in cart.html from item*/
+function makeArticle(item) {
+    const article = document.createElement("article")
+    article.classList.add("cart__item")
+    article.dataset.id = item.id /** Make Article by searching data by id*/
+    article.dataset.color = item.color/** Make Article by searching data by color*/
+    return article
+}
+
+/** Display Article in cart__items in cart.html*/
+function displayArticle(article) {
+    document.querySelector("#cart__items").appendChild(article)
+}
+
+/** Make ImageDiv(cart__item__img) to display in cart.html*/
+function makeImageDiv(item) {
+    const div = document.createElement("div")
+    div.classList.add("cart__item__img")
+
+/** Make img and append it to ImageDiv(cart__item__img) in cart.html*/
+    const image = document.createElement("img")
+    image.src = item.imageUrl
+    image.alt = item.altTxt
+    div.appendChild(image)
+    return div
+}
+
+/** Make CartContent(cart__item__content) to display in cart.html*/
+function makeCartContent(item) {
+    const cartItemContent = document.createElement("div")
+    cartItemContent.classList.add("cart__item__content")
+
+    const description = makeDescription(item) /** Make description(cart__item__content__description)*/    
+    const settings = makeSettings(item)/** Make settings(cart__item__content__settings)*/ 
+
+    cartItemContent.appendChild(description)
+    cartItemContent.appendChild(settings)
+    return cartItemContent
+}
+
+/** Make settings(cart__item__content__settings) in CartContent(cart__item__content) in cart.html*/ 
+function makeSettings(item) {
+    const settings = document.createElement("div")
+    settings.classList.add("cart__item__content__settings")
+
+    addQuantityToSettings(settings, item)
+    addDeleteButton(settings, item)
+    return settings
+}
+
+/** Make description(cart__item__content__description) in CartContent(cart__item__content) in cart.html*/ 
+function makeDescription(item) {
+    const description = document.createElement("div")
+    description.classList.add("cart__item__content__description")
+
+    const h2 = document.createElement("h2")
+    h2.textContent = item.name
+
+    const p = document.createElement("p")
+    p.textContent = item.color
+
+    const p2 = document.createElement("p")
+    p2.textContent = item.price + " €"
+
+    description.appendChild(h2)
+    description.appendChild(p)
+    description.appendChild(p2)
+    return description
+    
 }
 
 /** Calculation of the quantity to be displayed. */
@@ -40,47 +112,6 @@ function displayTotalPrice() {
     totalPrice.textContent = total
 }
 
-
-
-function makeArticle(item) {
-    const article = document.createElement("article")
-    article.classList.add("cart__item")
-    article.dataset.id = item.id
-    article.dataset.color = item.color
-    return article
-}
-
-function makeImageDiv(item) {
-    const div = document.createElement("div")
-    div.classList.add("cart__item__img")
-
-    const image = document.createElement("img")
-    image.src = item.imageUrl
-    image.alt = item.altTxt
-    div.appendChild(image)
-    return div
-}
-
-function makeCartContent(item) {
-    const cartItemContent = document.createElement("div")
-    cartItemContent.classList.add("cart__item__content")
-    
-    const description = makeDescription(item)
-    const settings = makeSettings(item)
-
-    cartItemContent.appendChild(description)
-    cartItemContent.appendChild(settings)
-    return cartItemContent
-}
-
-function makeSettings(item) {
-    const settings = document.createElement("div")
-    settings.classList.add("cart__item__content__settings")
-
-    addQuantityToSettings(settings, item)
-    addDeleteButton(settings, item)
-    return settings
-}
 
 function addDeleteButton(settings,item) {
     const div = document.createElement("div")
@@ -153,34 +184,10 @@ function saveNewDataToCache(item) {
     localStorage.setItem(key, dataToSave)
 }
 
+// ********* ORDER FORM ********* //
 
-function makeDescription(item) {
-    const description = document.createElement("div")
-    description.classList.add("cart__item__content__description")
-
-    const h2 = document.createElement("h2")
-    h2.textContent = item.name
-
-    const p = document.createElement("p")
-    p.textContent = item.color
-
-    const p2 = document.createElement("p")
-    p2.textContent = item.price + " €"
-
-    description.appendChild(h2)
-    description.appendChild(p)
-    description.appendChild(p2)
-    return description
-    
-}
-
-function displayArticle(article) {
-    document.querySelector("#cart__items").appendChild(article)
-}
-
-    const orderButton = document.querySelector("#order")
-    orderButton.addEventListener("click", (e) => submitForm(e))
-
+const orderButton = document.querySelector("#order")
+orderButton.addEventListener("click", (e) => submitForm(e))
 
 function submitForm(e) {
     e.preventDefault()
@@ -188,16 +195,17 @@ function submitForm(e) {
         alert("Your cart is empty!")
         return
     }
+
     if (isFirstNameInvalid() === true) return;
     if (isLastNameInvalid() === true) return;
     if (isAddressInvalid() === true) return;
     if (isCityInvalid() === true) return;
     if (isEmailInvalid() === true) return;
-    
-}
 
 
     const requestData = makeRequestData()
+
+/** API request to send data. */   
     fetch("http://localhost:3000/api/products/order", {
         method : "POST",
         body : JSON.stringify(requestData),
@@ -207,11 +215,17 @@ function submitForm(e) {
     })
     .then(response => response.json())
     .then((data) => {
-        const orderId = data.orderId
+        const orderId = data.orderId;
+        localStorage.clear();
+
+        /** Set confirm order id to local storage. */
+        localStorage.setItem("orderId", JSON.stringify(orderId))
+
+        /** Redirects to the confirmation page. */
         window.location.href = "confirmation.html?orderId=" + data.orderId
     })
     .catch((err) => console.error(err))
-
+}
 
 function isFirstNameInvalid() {
     const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
@@ -304,7 +318,7 @@ return requestData
 
 }
 
-/** Prepare an array of ids. */
+
 function getIdsfromCache() {
     const numberOfProducts = localStorage.length
     const ids = []

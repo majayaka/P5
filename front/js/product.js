@@ -1,28 +1,35 @@
+/** To find the Query String of URL */
 const queryString = window.location.search
+/** To get IDs in the Query String of URL */
 const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get("id")
+
 if (id != null) {
-    let itemPrice = 0 
-    let imgUrl, altText, articleName
+    let itemPrice = 0 /** To get the prices in data in line 97*/
+    let imgUrl, altText, articleName /** To get them in data after line 98*/
 }
 
+/** Request to the api all product data from their IDs. */
 fetch(`http://localhost:3000/api/products/${id}`)
 .then((response) => response.json())
 .then((res) => handleData(res))
+.catch((err) => console.error(err));
 
+/** Change "res" to "sofa" and name each elements.*/
 function handleData(sofa) {
-        const { altTxt, colors, description, imageUrl, name, price } = sofa
-        itemPrice = price
-        imgUrl = imageUrl
-        altText = altTxt
-        articleName = name
-        makeImage(imageUrl, altTxt)
-        makeTitle(name)
-        makePrice(price)
-        makeDescription(description)
-        makeColors(colors)
-    }
+    const { altTxt, colors, description, imageUrl, name, price } = sofa
+    itemPrice = price /** To get the prices in data in line 97*/
+    imgUrl = imageUrl /** To get them in data after line 98*/
+    altText = altTxt
+    articleName = name
+    makeImage(imageUrl, altTxt)
+    makeTitle(name)
+    makePrice(price)
+    makeDescription(description)
+    makeColors(colors)
+}
 
+/** Make "img" in item__img in product.html*/  
 function makeImage(imageUrl, altTxt) {
     const image = document.createElement("img")
     image.src = imageUrl
@@ -31,26 +38,25 @@ function makeImage(imageUrl, altTxt) {
     if (parent != null)parent.appendChild(image)
 }
 
+/** Make title in item__content__titlePrice in product.html*/
 function makeTitle(name) {
     const h1 = document.querySelector("#title")
-    console.log(h1)
-    const parent = document.querySelector(".item__content__titlePrice")
-    if (h1 != null){ 
-        h1.innerText = name
-    }
+    if (h1 != null) h1.textContent = name
 }
 
+/** Make "span"=price in item__content__titlePrice in product.html*/
 function makePrice(price) {
     const span = document.querySelector("#price")
-    const parent = document.querySelector(".item__content__titlePrice")
     if (span != null) span.textContent = price
 }
 
+/** Make "p"=description in item__content in product.html*/
 function makeDescription(description) {
     const p = document.querySelector("#description")
     if (p != null) p.textContent = description
 }
 
+/** Make "select"=colors to cart in article in product.html*/
 function makeColors(colors) {
     const select = document.querySelector("#colors")
     if (select != null) {
@@ -64,9 +70,9 @@ function makeColors(colors) {
 }
 }
 
+/** Handle the click on the add to cart button. */
 const button = document.querySelector("#addToCart")
 button.addEventListener("click", handleClick)
-
 
 function handleClick() {
     const color = document.querySelector("#colors").value
@@ -77,16 +83,17 @@ function handleClick() {
         }
         saveOrder(color, quantity)
     
-        window.location.href = "cart.html"
+        window.location.href = "cart.html" /** Redirecting to cart.html*/
 
     }
 
+/** Add the product to local Storage. */
     function saveOrder(color, quantity)  { 
         const key = `${id}-${color}`
         const data = {
         id: id,
         color: color,
-        quantity: Number(quantity),
+        quantity: Number(quantity), /** To get it in Number, not in string*/
         price: itemPrice,
         imageUrl: imgUrl,
         altTxt: altText,
@@ -94,6 +101,6 @@ function handleClick() {
     }
 
     localStorage.setItem(key, JSON.stringify(data))
-
-    }
+/** local Storage cannot save objects so they has to be changed in string type.*/
+}
 
