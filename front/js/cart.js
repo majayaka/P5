@@ -7,12 +7,23 @@ function retrieveCart() {
         /** Retrive elements with keys from local strage*/
         const item = localStorage.getItem(localStorage.key(i)) || ""
         const itemObject = JSON.parse(item) /** because wanted it not in string, in object*/
-        cart.push(itemObject)
+
+        fetch(`http://localhost:3000/api/furniture/${itemObject.id}`)
+        .then((response) => response.json())
+        .then((res) => {
+            const cartItem = { 
+                itemObject,
+                res,
+            }
+            cart.push(cartItem)
+            
+            /** Display Elements retrived from local strage.*/
+            cart.forEach((item) => displayItem(item))
+        })
+        .catch((err) => console.error(err))
     }
 }
 
-/** Display Elements retrived from local strage.*/
-cart.forEach((item) => displayItem(item))
 
 /** Make displayItem to display in cart.html*/
 function displayItem(item) {
@@ -337,4 +348,3 @@ function isFormInvalid() {
         return false    
     }) 
 }
-
