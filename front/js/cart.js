@@ -8,7 +8,7 @@ function retrieveCart() {
         const item = localStorage.getItem(localStorage.key(i)) || ""
         const itemObject = JSON.parse(item) /** because wanted it not in string, in object*/
 
-        fetch(`http://localhost:3000/api/furniture/${itemObject.id}`)
+        fetch(`http://localhost:3000/api/products/${itemObject.id}`)
         .then((response) => response.json())
         .then((res) => {
             const cartItem = { 
