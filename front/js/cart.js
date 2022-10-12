@@ -6,7 +6,7 @@ function retrieveCart() {
     for(let i = 0; i < numberOfItems; i++) {
         /** Retrive elements with keys from local strage*/
         const item = localStorage.getItem(localStorage.key(i)) || ""
-        const itemObject = JSON.parse(item) /** not in string, in objet*/
+        const itemObject = JSON.parse(item) /** because wanted it not in string, in object*/
         cart.push(itemObject)
     }
 }
@@ -98,49 +98,6 @@ function makeDescription(item) {
     
 }
 
-/** Calculation of the quantity to be displayed. */
-function displayTotalQuantity() {
-    const totalQuantity = document.querySelector("#totalQuantity")
-    const total = cart.reduce((total, item) => total + item.quantity, 0)
-    totalQuantity.textContent = total
-}
-
-/** Calculation of the price to be displayed. */
-function displayTotalPrice() {
-    const totalPrice = document.querySelector("#totalPrice")
-    const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
-    totalPrice.textContent = total
-}
-
-
-function addDeleteButton(settings,item) {
-    const div = document.createElement("div")
-    div.classList.add("cart__item__content__settings__delete")
-    div.addEventListener("click", () => deleteItem(item))
-
-    const p = document.createElement("p")
-    p.textContent = "Supprimer"
-    div.appendChild(p)
-    settings.appendChild(div)
-}
-
-function deleteItem(item) {
-    const itemToDelete = cart.findIndex(
-        (product) => product.id === item.id && product.color === item.color)
-    cart.splice(itemToDelete,1)
-    displayTotalPrice()
-    displayTotalQuantity()
-    deleteDataFromCache(item)
-    deleteArticleFromPage(item)
-}
-
-function deleteArticleFromPage(item) {
-    const articleToDelete = document.querySelector(
-        `article[data-id="${item.id}"][data-color="${item.color}"]`
-        ) 
-    articleToDelete.remove()
-}
-
 /** Listen for the click on the quantity element. */
 function addQuantityToSettings(settings, item) {
     const quantity = document.createElement("div")
@@ -154,43 +111,90 @@ function addQuantityToSettings(settings, item) {
     input.value = item.quantity
     input.min = "1"
     input.max = "100"
-    input.addEventListener("input", () => updatePriceAndQuantity(input.value, item))
+    input.addEventListener("input", () => updatePriceAndQuantity(input.value, item))/** to catch the quantity in input. */
 
     quantity.appendChild(p)
     settings.appendChild(quantity)
     quantity.appendChild(input)
 }
 
-/** Update product quantity and price. */
-function updatePriceAndQuantity (newValue, item) {
-    const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)
-    itemToUpdate.quantity = Number(newValue) 
+/** Calculation of the total quantity to be displayed. */
+function displayTotalQuantity() {
+    const totalQuantity = document.querySelector("#totalQuantity")
+    const total = cart.reduce((total, item) => total + item.quantity, 0)/** to calculate total and item in cart. */
+    totalQuantity.textContent = total
+}
+
+/** Calculation of the total price to be displayed. */
+function displayTotalPrice() {
+    const totalPrice = document.querySelector("#totalPrice")
+    const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)/** to calculate total and item. */
+    totalPrice.textContent = total
+}
+
+/** Update product's quantity and price. */
+function updatePriceAndQuantity (newValue, item) { /** newValue = updated "input.value" */
+    const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)/** to find the id of the item updated. */
+    itemToUpdate.quantity = Number(newValue) /** not in text, in number */
     item.quantity = itemToUpdate.quantity
     displayTotalQuantity()
     displayTotalPrice()
     saveNewDataToCache(item)
 }
 
-/** Remove the element from the dom and the local storage. */
+/** Save new data to local storage. */
+function saveNewDataToCache(item) {
+    const dataToSave = JSON.stringify(item) /** change item data in string */
+    const key = `${item.id}-${item.color}` /** to make key = different id for different color. */
+    localStorage.setItem(key, dataToSave)
+}
+
+/** Add the delete button and send the item to delete. */
+function addDeleteButton(settings,item) {
+    const div = document.createElement("div")
+    div.classList.add("cart__item__content__settings__delete")
+    div.addEventListener("click", () => deleteItem(item)) /** to catch the item to delete and pass to deleteItem.*/
+
+    const p = document.createElement("p")
+    p.textContent = "Supprimer"
+    div.appendChild(p)
+    settings.appendChild(div)
+}
+
+/** Delete the item. */
+function deleteItem(item) { 
+    const itemToDelete = cart.findIndex( /** to find only index of array to delete. */
+        (product) => product.id === item.id && product.color === item.color) /** to find the item of the id and of the color of the one to delete. */
+    cart.splice(itemToDelete,1) /** to remove indexes useless*/
+    displayTotalPrice()
+    displayTotalQuantity()
+    deleteDataFromCache(item)
+    deleteArticleFromPage(item)
+}
+
+/** Delete the article from the page. */
+function deleteArticleFromPage(item) {
+    const articleToDelete = document.querySelector(
+        `article[data-id="${item.id}"][data-color="${item.color}"]` /** the item of the id and of the color of the one to delete. */
+        ) 
+    articleToDelete.remove()
+}
+
+/** Remove the item from the dom and the local storage. */
 function deleteDataFromCache(item) {
-    const key = `${item.id}-${item.color}`
+    const key = `${item.id}-${item.color}` /** the item of the id and of the color of the one to delete. */
     localStorage.removeItem(key)
 }
 
-/** Add product to local storage. */
-function saveNewDataToCache(item) {
-    const dataToSave = JSON.stringify(item)
-    const key = `${item.id}- ${item.color}`
-    localStorage.setItem(key, dataToSave)
-}
 
 // ********* ORDER FORM ********* //
 
 const orderButton = document.querySelector("#order")
 orderButton.addEventListener("click", (e) => submitForm(e))
 
+/** Submit the order form */
 function submitForm(e) {
-    e.preventDefault()
+    e.preventDefault() /** to prevent the default action(refresh the page). */
     if (cart.length === 0)  {
         alert("Your cart is empty!")
         return
@@ -202,31 +206,62 @@ function submitForm(e) {
     if (isCityInvalid() === true) return;
     if (isEmailInvalid() === true) return;
 
-
-    const requestData = makeRequestData()
-
 /** API request to send data. */   
-    fetch("http://localhost:3000/api/products/order", {
-        method : "POST",
-        body : JSON.stringify(requestData),
-        headers : {
-            "Content-Type" : "application/json"
-        }   
-    })
-    .then(response => response.json())
-    .then((data) => {
-        const orderId = data.orderId;
-        localStorage.clear();
 
-        /** Set confirm order id to local storage. */
-        localStorage.setItem("orderId", JSON.stringify(orderId))
+const requestData = makeRequestData()
 
-        /** Redirects to the confirmation page. */
-        window.location.href = "confirmation.html?orderId=" + data.orderId
-    })
-    .catch((err) => console.error(err))
+fetch("http://localhost:3000/api/products/order", {
+    method : "POST", /** to send data to storage. */
+    body : JSON.stringify(requestData), /** prepare data in string. */
+    headers : {
+        "Content-Type" : "application/json"
+    }   
+})
+.then(response => response.json())
+.then((data) => {
+    const orderId = data.orderId;
+    localStorage.clear(); /** Clear all in local storage after validation of order. */
+
+    /** Set confirm order id to local storage. */
+    localStorage.setItem("orderId", JSON.stringify(orderId))
+
+    /** Redirects to the confirmation page with order ID. */
+    window.location.href = "confirmation.html?orderId=" + data.orderId
+})
+.catch((err) => console.error(err))
 }
 
+/** Make the request data for the request. */
+function makeRequestData() {
+    const form = document.querySelector(".cart__order__form") /** pick up data from the form filled in cart__order__form. */
+    const contact = { /** to create an object with the data of the form. */
+        firstName : form.elements.firstName.value,
+        lastName : form.elements.lastName.value,
+        address : form.elements.address.value,
+        city : form.elements.city.value,
+        email : form.elements.email.value
+    }
+    const products = cart.map(item => item.id) /** to create an array with the id of the items in cart. */
+    const requestData = {
+        contact,
+        products
+    }
+return requestData
+}
+
+/** Get the id of the items from cache. */
+function getIdsfromCache() {
+    const numberOfProducts = localStorage.length
+    const ids = []
+    for (let i = 0; i < numberOfProducts; i++) {
+        const key = localStorage.key(i)
+        const id = key.split("-")[0]   /** to remove after "-$color" */ 
+        ids.push(item.id)
+    }
+    return ids
+}
+
+/** Validation or error message for first name. */
 function isFirstNameInvalid() {
     const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
     const firstName = document.querySelector("#firstName").value;
@@ -239,6 +274,7 @@ function isFirstNameInvalid() {
 }
 }
 
+/** Validation or error message for last name. */
 function isLastNameInvalid() {
     const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
     const lastName = document.querySelector("#lastName").value;
@@ -251,6 +287,7 @@ function isLastNameInvalid() {
 }
 }
 
+/** Validation or error message for address. */
 function isAddressInvalid() {
     const regex = /^[a-zA-Z0-9À-ÿ-. ]+$/;
     const address = document.querySelector("#address").value;
@@ -263,6 +300,7 @@ function isAddressInvalid() {
 }
 } 
 
+/** Validation or error message for city. */
 function isCityInvalid() {
     const regex = /^[a-zA-ZÀ-ÿ-. ]+$/;
     const city = document.querySelector("#city").value;
@@ -275,6 +313,7 @@ function isCityInvalid() {
 }
 }
 
+/** Validation or error message for email. */
 function isEmailInvalid() {
     const email = document.querySelector("#email").value
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
@@ -286,7 +325,7 @@ function isEmailInvalid() {
 }
 }
     
-
+/** Validation or error message for all fields. */
 function isFormInvalid() {
     const form = document.querySelector(".cart__order__form")
     const inputs = form.querySelectorAll("input")
@@ -299,33 +338,3 @@ function isFormInvalid() {
     }) 
 }
 
-/** Prepare the data for the request. */
-function makeRequestData() {
-    const form = document.querySelector(".cart__order__form")
-    const contact = {
-        firstName : form.elements.firstName.value,
-        lastName : form.elements.lastName.value,
-        address : form.elements.address.value,
-        city : form.elements.city.value,
-        email : form.elements.email.value
-    }
-    const products = cart.map(item => item.id)
-    const requestData = {
-        contact,
-        products
-    }
-return requestData
-
-}
-
-
-function getIdsfromCache() {
-    const numberOfProducts = localStorage.length
-    const ids = []
-    for (let i = 0; i < numberOfProducts; i++) {
-        const key = localStorage.key(i)
-        const id = key.split("-")[0]    
-        ids.push(item.id)
-    }
-    return ids
-}

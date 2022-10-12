@@ -1,7 +1,5 @@
-/** To find the Query String of URL */
-const queryString = window.location.search
-/** To get IDs in the Query String of URL */
-const urlParams = new URLSearchParams(queryString)
+const queryString = window.location.search /** To find the Query String of URL */
+const urlParams = new URLSearchParams(queryString) /** To get IDs in the Query String of URL */
 const id = urlParams.get("id")
 
 if (id != null) {
@@ -9,13 +7,13 @@ if (id != null) {
     let imgUrl, altText, articleName /** To get them in data after line 98*/
 }
 
-/** Request to the api all product data from their IDs. */
+/** Request to the api the product data from the ID. */
 fetch(`http://localhost:3000/api/products/${id}`)
 .then((response) => response.json())
 .then((res) => handleData(res))
 .catch((err) => console.error(err));
 
-/** Change "res" to "sofa" and name each elements.*/
+/** Handle data of "sofa" and name each elements.*/
 function handleData(sofa) {
     const { altTxt, colors, description, imageUrl, name, price } = sofa
     itemPrice = price /** To get the prices in data in line 97*/

@@ -9,7 +9,7 @@ function addProducts(products) {
 products.forEach((kanap) => {
     const {_id, imageUrl, altTxt, name, description} = kanap
     const anchor = makeAnchor(_id)
-    const article = document.createElement("article")
+    const article = document.createElement("article")/** Make element "article" in index.html*/
     const image = makeImage(imageUrl, altTxt)
     const h3 = makeH3(name)
     const p =  makeParagraph(description)
