@@ -4,12 +4,35 @@ cart.forEach((item) => displayItem(item))
 
 /** Retrive elements from local storage.*/
 function retrieveCart() {
+<<<<<<< HEAD
   const numberOfItems = localStorage.length
   for (let i = 0; i < numberOfItems; i++) {
     const item = localStorage.getItem(localStorage.key(i)) || ""
     const itemObject = JSON.parse(item)
     cart.push(itemObject)
   }
+=======
+    const numberOfItems = localStorage.length /** Number of items added in cart*/
+    for(let i = 0; i < numberOfItems; i++) {
+        /** Retrive elements with keys from local strage*/
+        const item = localStorage.getItem(localStorage.key(i)) || ""
+        const itemObject = JSON.parse(item) /** because wanted it not in string, in object*/
+
+        fetch(`http://localhost:3000/api/products/${itemObject.id}`)
+        .then((response) => response.json())
+        .then((res) => {
+            const cartItem = { 
+                itemObject,
+                res,
+            }
+            cart.push(cartItem)
+            
+            /** Display Elements retrived from local strage.*/
+            cart.forEach((item) => displayItem(item))
+        })
+        .catch((err) => console.error(err))
+    }
+>>>>>>> refs/remotes/origin/main
 }
 
 /** Make displayItem to display in cart.html*/
