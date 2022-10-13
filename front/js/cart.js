@@ -1,15 +1,28 @@
 const cart = [] /** list of array of all products in cart.*/
 retrieveCart() /** Retrive elements from local storage.*/
-cart.forEach((item) => displayItem(item))
+
 
 /** Retrive elements from local storage.*/
 function retrieveCart() {
-  const numberOfItems = localStorage.length
-  for (let i = 0; i < numberOfItems; i++) {
-    const item = localStorage.getItem(localStorage.key(i)) || ""
-    const itemObject = JSON.parse(item)
-    cart.push(itemObject)
-  }
+    const numberOfItems = localStorage.length
+    for (let i = 0; i < numberOfItems; i++) {
+        const item = localStorage.getItem(localStorage.key(i)) || ""
+        const itemObject = JSON.parse(item)
+
+        /** Retrive to API to get infos of product*/
+        fetch(`http://localhost:3000/api/products/${itemObject.id}`)
+        .then((response) => response.json())
+        .then((res) => {
+            const cartItem = {
+                ...itemObject,
+                ...res,
+            }
+            
+            cart.push(cartItem)
+            cart.forEach((item) => displayItem(item))/** To display infos retrived*/
+  })
+    .catch((err) => console.error(err));
+    }
 }
 
 /** Make displayItem to display in cart.html*/

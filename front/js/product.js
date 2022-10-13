@@ -92,10 +92,6 @@ function handleClick() {
         id: id,
         color: color,
         quantity: Number(quantity), /** To get it in Number, not in string*/
-        price: itemPrice,
-        imageUrl: imgUrl,
-        altTxt: altText,
-        name: articleName
     }
 
     localStorage.setItem(key, JSON.stringify(data))
