@@ -9,7 +9,7 @@ function retrieveCart() {
         const item = localStorage.getItem(localStorage.key(i)) || ""
         const itemObject = JSON.parse(item)
 
-        /** Retrive to API to get infos of product*/
+        /** Request to API to retrive infos of product*/
         fetch(`http://localhost:3000/api/products/${itemObject.id}`)
         .then((response) => response.json())
         .then((res) => {
