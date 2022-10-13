@@ -1,29 +1,16 @@
 const cart = [] /** list of array of all products in cart.*/
-retrieveCart() /** Retrive elements from local strage.*/
+retrieveCart() /** Retrive elements from local storage.*/
+cart.forEach((item) => displayItem(item))
 
+/** Retrive elements from local storage.*/
 function retrieveCart() {
-    const numberOfItems = localStorage.length /** Number of items added in cart*/
-    for(let i = 0; i < numberOfItems; i++) {
-        /** Retrive elements with keys from local strage*/
-        const item = localStorage.getItem(localStorage.key(i)) || ""
-        const itemObject = JSON.parse(item) /** because wanted it not in string, in object*/
-
-        fetch(`http://localhost:3000/api/furniture/${itemObject.id}`)
-        .then((response) => response.json())
-        .then((res) => {
-            const cartItem = { 
-                itemObject,
-                res,
-            }
-            cart.push(cartItem)
-            
-            /** Display Elements retrived from local strage.*/
-            cart.forEach((item) => displayItem(item))
-        })
-        .catch((err) => console.error(err))
-    }
+  const numberOfItems = localStorage.length
+  for (let i = 0; i < numberOfItems; i++) {
+    const item = localStorage.getItem(localStorage.key(i)) || ""
+    const itemObject = JSON.parse(item)
+    cart.push(itemObject)
+  }
 }
-
 
 /** Make displayItem to display in cart.html*/
 function displayItem(item) {
@@ -230,7 +217,7 @@ fetch("http://localhost:3000/api/products/order", {
 })
 .then(response => response.json())
 .then((data) => {
-    const orderId = data.orderId;
+    const orderId = data.orderId
     localStorage.clear(); /** Clear all in local storage after validation of order. */
 
     /** Set confirm order id to local storage. */
