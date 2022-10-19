@@ -61,7 +61,7 @@ function makeColors(colors) {
         colors.forEach((color) => {
             const option = document.createElement("option")
             option.value = color
-            option.textContent = color
+            option.textContent = color  
             select.appendChild(option)
         })
 

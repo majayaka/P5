@@ -1,29 +1,25 @@
 const cart = [] /** list of array of all products in cart.*/
 retrieveCart() /** Retrive elements from local storage.*/
 
-
 /** Retrive elements from local storage.*/
 function retrieveCart() {
-    const numberOfItems = localStorage.length
+    const numberOfItems = localStorage.length;
     for (let i = 0; i < numberOfItems; i++) {
-        const item = localStorage.getItem(localStorage.key(i)) || ""
-        const itemObject = JSON.parse(item)
-
-        /** Request to API to retrive infos of product*/
-        fetch(`http://localhost:3000/api/products/${itemObject.id}`)
-        .then((response) => response.json())
-        .then((res) => {
-            const cartItem = {
-                ...itemObject,
-                ...res,
-            }
-            
-            cart.push(cartItem)
-            cart.forEach((item) => displayItem(item))/** To display infos retrived*/
-  })
-    .catch((err) => console.error(err));
+       const item = localStorage.getItem(localStorage.key(i)) || '';
+       const itemObject = JSON.parse(item);
+ 
+       /** Request to API to retrive infos of product*/
+       fetch(`http://localhost:3000/api/products/${ itemObject.id }`)
+           .then((response) => response.json())
+           .then((res) => {
+              const cartItem = { ...itemObject, ...res };
+              cart.push(cartItem);
+              displayItem(cartItem);
+              /** To display infos retrived*/
+           })
+           .catch((err) => console.error(err));
     }
-}
+ }
 
 /** Make displayItem to display in cart.html*/
 function displayItem(item) {
@@ -120,7 +116,7 @@ function addQuantityToSettings(settings, item) {
     input.classList.add("itemQuantity")
     input.name = "itemQuantity"
     input.value = item.quantity
-    input.min = "1"
+    input.min = "0"
     input.max = "100"
     input.addEventListener("input", () => updatePriceAndQuantity(input.value, item))/** to catch the quantity in input. */
 
@@ -206,7 +202,7 @@ orderButton.addEventListener("click", (e) => submitForm(e))
 /** Submit the order form */
 function submitForm(e) {
     e.preventDefault() /** to prevent the default action(refresh the page). */
-    if (cart.length === 0)  {
+    if (cart.length === 0) { /** to check if the cart is empty. */
         alert("Your cart is empty!")
         return
     }
@@ -335,7 +331,8 @@ function isEmailInvalid() {
         document.querySelector("#emailErrorMsg").textContent = "";
 }
 }
-    
+
+
 /** Validation or error message for all fields. */
 function isFormInvalid() {
     const form = document.querySelector(".cart__order__form")
@@ -348,3 +345,4 @@ function isFormInvalid() {
         return false    
     }) 
 }
+
