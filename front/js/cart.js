@@ -140,14 +140,22 @@ function displayTotalPrice() {
 }
 
 /** Update product's quantity and price. */
-function updatePriceAndQuantity (newValue, item) { /** newValue = updated "input.value" */
-    const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)/** to find the id of the item updated. */
-    itemToUpdate.quantity = Number(newValue) /** not in text, in number */
-    item.quantity = itemToUpdate.quantity
-    displayTotalQuantity()
-    displayTotalPrice()
-    saveNewDataToCache(item)
+function updatePriceAndQuantity (newValue, item, e) { /** newValue = updated "input.value" */
+e.preventDefault() /** to prevent the default action(refresh the page). */
+if (newValue < 0) { /** to check if the cart is not in negative number. */
+    alert("Please enter a valid quantity")
+    return
+
 }
+const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)/** to find the id of the item updated. */
+itemToUpdate.quantity = Number(newValue) /** not in text, in number */
+item.quantity = itemToUpdate.quantity
+
+displayTotalQuantity()
+displayTotalPrice()
+saveNewDataToCache(item)
+}
+
 
 /** Save new data to local storage. */
 function saveNewDataToCache(item) {
@@ -202,7 +210,7 @@ orderButton.addEventListener("click", (e) => submitForm(e))
 /** Submit the order form */
 function submitForm(e) {
     e.preventDefault() /** to prevent the default action(refresh the page). */
-    if (cart.length === 0) { /** to check if the cart is empty. */
+    if (cart.length === 0 || cart.length === null) { /** to check if the cart is empty. */
         alert("Your cart is empty!")
         return
     }
