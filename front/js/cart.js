@@ -118,7 +118,7 @@ function addQuantityToSettings(settings, item) {
     input.value = item.quantity
     input.min = "0"
     input.max = "100"
-    input.addEventListener("input", () => updatePriceAndQuantity(input.value, item))/** to catch the quantity in input. */
+    input.addEventListener("input", (e) => updatePriceAndQuantity(input.value, item, e))/** to catch the quantity in input. */
 
     quantity.appendChild(p)
     settings.appendChild(quantity)
@@ -141,12 +141,11 @@ function displayTotalPrice() {
 
 /** Update product's quantity and price. */
 function updatePriceAndQuantity (newValue, item, e) { /** newValue = updated "input.value" */
-e.preventDefault() /** to prevent the default action(refresh the page). */
-if (newValue < 0) { /** to check if the cart is not in negative number. */
-    alert("Please enter a valid quantity")
-    return
-
-}
+    if (newValue < 0) { /** to check if the cart is not in negative number. */
+        alert("Please enter a valid quantity")
+        e.currentTarget.value = 0
+        return
+  }
 const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)/** to find the id of the item updated. */
 itemToUpdate.quantity = Number(newValue) /** not in text, in number */
 item.quantity = itemToUpdate.quantity

@@ -75,8 +75,8 @@ button.addEventListener("click", handleClick)
 function handleClick() {
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
-    if (color == null || color === "" || quantity == null || quantity == 0) {
-        alert("Please select a color and quantity")
+    if (color == null || color === "" || quantity == null || quantity == 0 || quantity < 0)  {
+        alert("Please select correct color and quantity")
         return
         }
         saveOrder(color, quantity)
