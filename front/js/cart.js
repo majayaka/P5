@@ -143,7 +143,7 @@ function displayTotalPrice() {
 function updatePriceAndQuantity (newValue, item, e) { /** newValue = updated "input.value" */
     if (newValue < 0) { /** to check if the cart is not in negative number. */
         alert("Please enter a valid quantity")
-        e.currentTarget.value = 0
+        e.currentTarget.value = 0 
         return
   }
 const itemToUpdate = cart.find(cartItem => cartItem.id === item.id)/** to find the id of the item updated. */
@@ -214,11 +214,7 @@ function submitForm(e) {
         return
     }
 
-    if (isFirstNameInvalid() === true) return;
-    if (isLastNameInvalid() === true) return;
-    if (isAddressInvalid() === true) return;
-    if (isCityInvalid() === true) return;
-    if (isEmailInvalid() === true) return;
+    if (isFirstNameInvalid() || isLastNameInvalid() || isAddressInvalid() || isCityInvalid() || isEmailInvalid()) return; /** to check if the form is valid. */
 
 /** API request to send data. */   
 

@@ -24,7 +24,7 @@ products.forEach((kanap) => {
 function appendElementsToArticle(article, array) {
     array.forEach((item)=> {
         article.appendChild(item)
-    });
+    })
 }
 
 /** Make Anchor "a.href" in index.html*/   

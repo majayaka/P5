@@ -86,12 +86,18 @@ function handleClick() {
     }
 
 /** Add the product to local Storage. */
-    function saveOrder(color, quantity)  { 
+    function saveOrder(color, newQuantity)  { 
         const key = `${id}-${color}`
+        let quantity = 0
+        const product = localStorage.getItem(key)
+        if (product != null) {
+            quantity = JSON.parse(product).quantity
+            console.log(JSON.parse(product))
+        }
         const data = {
         id: id,
         color: color,
-        quantity: Number(quantity), /** To get it in Number, not in string*/
+        quantity: Number(quantity) + Number(newQuantity) /** To get it in Number, not in string*/
     }
 
     localStorage.setItem(key, JSON.stringify(data))
