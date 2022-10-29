@@ -6,13 +6,13 @@ fetch("http://localhost:3000/api/products")
         
 /** Change data into "products" and loop each kanap and distribute, and name each elements.*/
 function addProducts(products) {
-products.forEach((kanap) => {
-    const {_id, imageUrl, altTxt, name, description} = kanap
-    const anchor = makeAnchor(_id)
-    const article = document.createElement("article")/** Make element "article" in index.html*/
-    const image = makeImage(imageUrl, altTxt)
-    const h3 = makeH3(name)
-    const p =  makeParagraph(description)
+    products.forEach((kanap) => {
+        const {_id, imageUrl, altTxt, name, description} = kanap
+        const anchor = makeAnchor(_id)
+        const article = document.createElement("article")/** Make element "article" in index.html*/
+        const image = makeImage(imageUrl, altTxt)
+        const h3 = makeH3(name)
+        const p =  makeParagraph(description)
 
 /** Append all elements to distribute to articles and each elements of "array".*/
     appendArticleToAnchor(anchor, article)

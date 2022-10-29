@@ -141,7 +141,7 @@ function displayTotalPrice() {
 
 /** Update product's quantity and price. */
 function updatePriceAndQuantity (newValue, item, e) { /** newValue = updated "input.value" */
-    if (newValue < 0) { /** to check if the cart is not in negative number. */
+    if (newValue < 0 || newValue == null || newValue == 0 || newValue > 100) { /** to check if the cart is in correct number. */
         alert("Please enter a valid quantity")
         e.currentTarget.value = 0 
         return

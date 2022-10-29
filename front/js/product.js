@@ -75,7 +75,7 @@ button.addEventListener("click", handleClick)
 function handleClick() {
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
-    if (color == null || color === "" || quantity == null || quantity == 0 || quantity < 0)  {
+    if (color == null || color === "" || quantity == null || quantity == 0 || quantity < 0 || quantity > 100)  {
         alert("Please select correct color and quantity")
         return
         }
